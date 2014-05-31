@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
+					   xmlns:s="library://ns.adobe.com/flex/spark"
+					   xmlns:mx="library://ns.adobe.com/flex/mx" showStatusBar="false"
+					   width="537" height="376" backgroundColor="#302F2D"
+					   nativeDragDrop="windowedapplication1_nativeDragDropHandler(event)"
+					   nativeDragEnter="windowedapplication1_nativeDragEnterHandler(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import flash.utils.setTimeout;
+			
+			import mx.controls.Alert;
+			import mx.managers.DragManager;
+			
+			import org.flexlite.domUtils.FileUtil;
+			/**
+			 * 拖拽文件进入
+			 */
+			private function windowedapplication1_nativeDragEnterHandler(event:NativeDragEvent):void
+			{
+				if(event.clipboard.hasFormat(ClipboardFormats.FILE_LIST_FORMAT))
+				{       
+					if(event.clipboard.hasFormat(ClipboardFormats.FILE_LIST_FORMAT))
+					{
+						var arr:Array = event.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
+						if(arr.length==1&&arr[0].extension=="xml"&&!arr[0].isDirectory)
+						{
+							DragManager.acceptDragDrop(this); 
+						}
+					}
+				}
+			}
+			/**
+			 * 拖拽文件放下
+			 */
+			private function windowedapplication1_nativeDragDropHandler(event:NativeDragEvent):void
+			{
+				var arr:Array = event.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
+				var targetFile:File = arr[0];
+				targetFile.extension=="xml"&&!targetFile.isDirectory
+				encryptSource(targetFile.nativePath);
+			}
+			/**
+			 * 解析配置文件
+			 */
+			private function encryptSource(configPath:String):void
+			{
+				var xmlStr:String = FileUtil.openAsString(configPath);
+				var xml:XML;
+				try
+				{
+					xml = new XML(xmlStr);
+				}
+				catch(e:Error)
+				{
+				}
+				if(!xml)
+				{
+					Alert.show("混淆配置文件encrypt.xml格式错误！");
+					return;
+				}
+				var srcPaths:Array = [];
+				for each(var item:XML in xml.src.path)
+				{
+					var srcPath:String = item.toString();
+					if(srcPath)
+						srcPaths.push(srcPath);
+				}
+				
+				var swcPaths:Array = [];
+				for each(item in xml.swc.path)
+				{
+					var swcPath:String = item.toString();
+					if(swcPath)
+						swcPaths.push(swcPath);
+				}
+				
+				var keyWordPath:String = xml.keyword.path[0].toString();
+				var targetSrc:String = xml.targetSrc.path[0].toString();
+				infoLabel.text = "正在混淆...请耐心等待几分钟...\n混淆完成后会自动弹出文件夹!";
+				setTimeout(startEncrypt,100,srcPaths,swcPaths,targetSrc,keyWordPath);
+			}
+			
+			/**
+			 * 开始混淆
+			 */
+			private function startEncrypt(srcPaths:Array,swcPaths:Array,targetSrc:String,keyWordPath:String):void
+			{
+				var encryptor:SwfEncrypt = new SwfEncrypt();
+				encryptor.startMixUp(srcPaths,swcPaths,targetSrc,keyWordPath);
+				var file:File = new File(targetSrc);
+				file.openWithDefaultApplication();
+				infoLabel.text = "拖拽配置文件「encrypt.xml」到此处";
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<s:Label id="infoLabel" color="#FFB400" fontFamily="SimSun" fontSize="28" horizontalCenter="0"
+			 text="拖拽配置文件「encrypt.xml」到此处" verticalCenter="0"/>
+</s:WindowedApplication>

@@ -1,0 +1,16 @@
+<root>
+	<src><!-- 要读取的源码路径列表，如果只有一个项目，就只填一个路径即可。如果需要把引用的库项目一起混淆，就同时填上库项目的路径 -->
+		<path>E:/Program/Flash/FlexLiteStudio2/src</path>
+		<path>E:/Program/Flash/FlexLiteDesktop/src</path>
+	</src>
+	<swc><!-- 要排除关键字的swc路径列表。理论上只需要playerglobal.swc，如果你还有引用第三方的库，而且是动态引用的，就需要填上对应的swc路径，排除那个库里出现的所有关键字-->
+		<path>E:/Program/Flash/FlexLite/bin/FlexLite.swc</path>
+		<path>E:/Program/Flash/FlexLiteStudio2/bin-debug/bin/libs/playerglobal.swc</path>
+	</swc>
+	<keyword><!-- 混淆后的映射表，用于保存原始的关键字和混淆后字符的对应关系。可以用于翻译报错信息。 用其他程序读取字节流，然后ByteArray.readObject()即可读取。 -->
+		<path>E:/Program/Flash/FlexLiteStudio2/doc/keyword.amf</path>
+	</keyword>
+	<targetSrc><!-- 混淆源码后，要发布到的路径。工具会把混淆后的代码文件和原始src路径列表下所有其他文件都复制到这个目录下，不会修改原始文件。 -->
+		<path>E:/Program/Flash/FlexLiteStudio2_MIX/src/</path>
+	</targetSrc>
+</root>
