@@ -5,6 +5,8 @@ package com.domlib.encrypt
 	import flash.filesystem.File;
 	import flash.utils.Dictionary;
 	
+	import org.flexlite.domUtils.CodeFilter;
+	import org.flexlite.domUtils.CodeUtil;
 	import org.flexlite.domUtils.FileUtil;
 	import org.flexlite.domUtils.StringUtil;
 	
@@ -246,6 +248,7 @@ package com.domlib.encrypt
 			return false;
 		}
 		
+		private var codeFilter:CodeFilter = new CodeFilter();
 		/**
 		 * 解析一个as文件
 		 */		
@@ -261,6 +264,7 @@ package com.domlib.encrypt
 			info.className = ClassUtil.getID(className);
 			info.packageName = ClassUtil.getPackage(className);
 			var asText:String = FileUtil.openAsString(path);
+			asText = codeFilter.removeComment(asText);
 			
 			var isInterface:Boolean = false;
 			var index:int = asText.indexOf(" interface ");
