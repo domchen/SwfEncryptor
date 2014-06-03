@@ -78,6 +78,7 @@
 				
 				var keyWordPath:String = xml.keyword.path[0].toString();
 				var targetSrc:String = xml.targetSrc.path[0].toString();
+				FileUtil.deletePath(targetSrc);
 				infoLabel.text = "正在混淆...请耐心等待几分钟...\n混淆完成后会自动弹出文件夹!";
 				setTimeout(startEncrypt,100,srcPaths,swcPaths,targetSrc,keyWordPath);
 			}
