@@ -1,6 +1,8 @@
 package
 {
 	import com.domlib.encrypt.ClassAnalyzer;
+	import com.domlib.utils.FileUtil;
+	import com.domlib.utils.StringUtil;
 	import com.swfdiy.data.ABC;
 	import com.swfdiy.data.SWF;
 	import com.swfdiy.data.SWFTag;
@@ -13,9 +15,6 @@ package
 	
 	import nochump.util.zip.ZipEntry;
 	import nochump.util.zip.ZipFile;
-	
-	import org.flexlite.domUtils.FileUtil;
-	import org.flexlite.domUtils.StringUtil;
 	
 	
 	/**

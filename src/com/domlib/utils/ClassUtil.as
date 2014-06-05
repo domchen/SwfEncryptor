@@ -1,4 +1,4 @@
-package com.domlib.encrypt
+package com.domlib.utils
 {
 	
 	/**

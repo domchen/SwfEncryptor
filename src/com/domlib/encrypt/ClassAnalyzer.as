@@ -1,14 +1,14 @@
 package com.domlib.encrypt
 {
 	
+	import com.domlib.utils.CodeFilter;
+	import com.domlib.utils.FileUtil;
+	import com.domlib.utils.StringUtil;
+	
 	import flash.events.EventDispatcher;
 	import flash.filesystem.File;
 	import flash.utils.Dictionary;
-	
-	import org.flexlite.domUtils.CodeFilter;
-	import org.flexlite.domUtils.CodeUtil;
-	import org.flexlite.domUtils.FileUtil;
-	import org.flexlite.domUtils.StringUtil;
+	import com.domlib.utils.ClassUtil;
 	
 	
 	/**

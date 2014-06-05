@@ -8,12 +8,13 @@
 	
 	<fx:Script>
 		<![CDATA[
+			import com.domlib.utils.FileUtil;
+			
 			import flash.utils.setTimeout;
 			
 			import mx.controls.Alert;
 			import mx.managers.DragManager;
 			
-			import org.flexlite.domUtils.FileUtil;
 			/**
 			 * 拖拽文件进入
 			 */
