@@ -77,20 +77,26 @@
 						swcPaths.push(swcPath);
 				}
 				
+				var excludeKeys:Array = [];
+				if(xml.hasOwnProperty("exclude"))
+				{
+					excludeKeys = String(xml.exclude).split(";");
+				}
+				
 				var keyWordPath:String = xml.keyword.path[0].toString();
 				var targetSrc:String = xml.targetSrc.path[0].toString();
 				FileUtil.deletePath(targetSrc);
 				infoLabel.text = "正在混淆...请耐心等待几分钟...\n混淆完成后会自动弹出文件夹!";
-				setTimeout(startEncrypt,100,srcPaths,swcPaths,targetSrc,keyWordPath);
+				setTimeout(startEncrypt,100,srcPaths,swcPaths,targetSrc,keyWordPath,excludeKeys);
 			}
 			
 			/**
 			 * 开始混淆
 			 */
-			private function startEncrypt(srcPaths:Array,swcPaths:Array,targetSrc:String,keyWordPath:String):void
+			private function startEncrypt(srcPaths:Array,swcPaths:Array,targetSrc:String,keyWordPath:String,excludeKeys:Array):void
 			{
 				var encryptor:SwfEncrypt = new SwfEncrypt();
-				encryptor.startMixUp(srcPaths,swcPaths,targetSrc,keyWordPath);
+				encryptor.startMixUp(srcPaths,swcPaths,targetSrc,keyWordPath,excludeKeys);
 				var file:File = new File(targetSrc);
 				file.openWithDefaultApplication();
 				infoLabel.text = "拖拽配置文件「encrypt.xml」到此处";

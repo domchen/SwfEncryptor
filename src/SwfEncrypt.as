@@ -57,7 +57,7 @@ package
 		 * @param keyWordPath 可选,载入上一次使用的关键字映射表,若有增加，则同时写入。
 		 */		
 		public function startMixUp(srcPaths:Array,excludeSwfs:Array,
-								   targetSrc:String,keyWordPath:String=""):void
+								   targetSrc:String,keyWordPath:String="",excludeKeys:Array = null):void
 		{
 			excludeDic = new Dictionary();
 			packageDic = new Dictionary();
@@ -97,7 +97,10 @@ package
 			}
 			
 			readKeyFromExcludeSwf(excludeSwfs);
-			
+			if(excludeKeys != null)
+			{
+				readKeyFromExcludeKeys(excludeKeys);
+			}
 			var analyzer:ClassAnalyzer = new ClassAnalyzer();
 			for each(var path:String in srcPaths)
 			{
@@ -308,6 +311,23 @@ package
 				}
 			}
 			for each(var key:String in strings)
+			{
+				if(propList.indexOf(key)==-1&&isNaN(Number(key)))
+				{
+					if(key.indexOf(".")!=-1)
+					{
+						packageDic[key] = true;
+					}
+					excludeDic[key] = true;
+				}
+			}
+		}
+		
+		
+		/**从中要排除的关键字列表中读取要排除的关键字,并返回最终要混淆的关键字列表*/
+		private function readKeyFromExcludeKeys(excludeKeys:Array):void
+		{
+			for each(var key:String in excludeKeys)
 			{
 				if(propList.indexOf(key)==-1&&isNaN(Number(key)))
 				{
