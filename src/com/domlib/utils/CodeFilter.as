@@ -2,7 +2,7 @@ package com.domlib.utils
 {
 	/**
 	 * 过滤代码中的所有常量和注释内容的工具类
-	 * @author DOM
+	 * @author dom
 	 */
 	public class CodeFilter
 	{

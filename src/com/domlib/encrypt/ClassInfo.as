@@ -4,7 +4,7 @@ package com.domlib.encrypt
 	
 	/**
 	 * 类属性
-	 * @author DOM
+	 * @author dom
 	 */
 	public class ClassInfo
 	{

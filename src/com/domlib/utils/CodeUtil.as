@@ -3,7 +3,7 @@ package com.domlib.utils
 	
 	/**
 	 * 代码解析工具类
-	 * @author DOM
+	 * @author dom
 	 */
 	public class CodeUtil
 	{

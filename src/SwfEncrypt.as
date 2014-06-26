@@ -19,7 +19,7 @@ package
 	
 	/**
 	 * SWF混淆工具
-	 * @author DOM
+	 * @author dom
 	 */
 	public class SwfEncrypt extends EventDispatcher
 	{

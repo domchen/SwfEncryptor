@@ -3,7 +3,7 @@ package com.domlib.utils
 	
 	/**
 	 * 类名工具
-	 * @author DOM
+	 * @author dom
 	 */
 	public class ClassUtil
 	{

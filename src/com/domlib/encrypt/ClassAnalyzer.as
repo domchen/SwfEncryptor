@@ -13,7 +13,7 @@ package com.domlib.encrypt
 	
 	/**
 	 * AS3源码分析工具
-	 * @author DOM
+	 * @author dom
 	 */
 	public class ClassAnalyzer extends EventDispatcher
 	{
