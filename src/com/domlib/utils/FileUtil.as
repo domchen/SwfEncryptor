@@ -427,7 +427,7 @@ package com.domlib.utils
 			return file.exists;
 		}
 		/**
-		 * 转换本机路径或url为Unix风格路径。
+		 * 转换本机路径或url为Unix风格路径。若是文件夹路径，返回值结尾已包含分隔符。
 		 */		
 		public static function escapePath(path:String):String
 		{
@@ -444,6 +444,24 @@ package com.domlib.utils
 				catch(e:Error)
 				{
 				}
+			}
+			try
+			{
+				file = new File(path);
+				if(file.exists)
+				{
+					if(file.isDirectory)
+						path = file.nativePath+File.separator;
+				}
+				else
+				{
+					var ext:String = getExtension(path);
+					if(!ext)
+						path = file.nativePath+File.separator;
+				}
+			}
+			catch(e:Error)
+			{
 			}
 			path = path.split("\\").join("/");
 			return path;

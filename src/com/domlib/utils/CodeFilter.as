@@ -12,10 +12,64 @@ package com.domlib.utils
 		public function CodeFilter()
 		{
 		}
+			
 		/**
-		 * 占位符
+		 * 是否为占位符
+		 */	
+		public static function isNBSP(str:String):Boolean
+		{
+			if(!str||str.length<3)
+				return false;
+			return str.charAt(0)=="\v"&&str.charAt(str.length-1)=="\v";
+		}
+		/**
+		 * 获取文本末尾的占位符。若最后一个字符不是占位符。返回""
 		 */		
-		public static const NBSP:String = "\v3\v";
+		public static function getLastNBSP(str:String):String
+		{
+			if(!str||str.length<3||str.charAt(str.length-1)!="\v")
+				return "";
+			str = str.substring(0,str.length-1);
+			var index:int = str.lastIndexOf("\v");
+			if(index==-1)
+				return "";
+			var char:String = str.substring(index+1);
+			if(isNaN(parseInt(char)))
+				return "";
+			return str.substring(index)+"\v";
+		}
+		/**
+		 * 获取文本末尾的占位符。若最后一个字符不是占位符。返回""
+		 */		
+		public static function getFirstNBSP(str:String):String
+		{
+			if(!str||str.length<3||str.charAt(0)!="\v")
+				return "";
+			str = str.substring(1);
+			var index:int = str.indexOf("\v");
+			if(index==-1)
+				return "";
+			var char:String = str.substring(0,index);
+			if(isNaN(parseInt(char)))
+				return "";
+			return "\v"+str.substring(0,index+1);
+		}
+		
+		private function getCommentIndex(str:String):int
+		{
+			return parseInt(str.substring(1,str.length-1));
+		}
+		
+		private var nbsp:String = null;
+		/**
+		 * 获取占位符
+		 */		
+		private function getNBSP():String
+		{
+			if(nbsp!==null)
+				return nbsp;
+			return "\v"+commentLines.length+"\v";
+		}
 		/**
 		 * 注释行
 		 */		
@@ -23,12 +77,14 @@ package com.domlib.utils
 		/**
 		 * 移除代码注释和字符串常量
 		 */		
-		public function removeComment(codeText:String):String
+		public function removeComment(codeText:String,nbsp:String=null):String
 		{
+			this.nbsp = nbsp;
 			var trimText:String = "";
-			codeText = codeText.split("\\\"").join("\v1\v");
-			codeText = codeText.split("\\\'").join("\v2\v");
-			var constArray:Array = [];
+			codeText = codeText.split("\\\\").join("\v-0\v");
+			codeText = codeText.split("\\\"").join("\v-1\v");
+			codeText = codeText.split("\\\'").join("\v-2\v");
+			commentLines = [];
 			while(codeText.length>0)
 			{
 				var quoteIndex:int = codeText.indexOf("\"");
@@ -37,7 +93,7 @@ package com.domlib.utils
 				var squoteIndex:int = codeText.indexOf("'");
 				if(squoteIndex==-1)
 					squoteIndex = int.MAX_VALUE;
-				var commentIndex:int = codeText.indexOf("/**");
+				var commentIndex:int = codeText.indexOf("/*");
 				if(commentIndex==-1)
 					commentIndex = int.MAX_VALUE;
 				var lineCommonentIndex:int = codeText.indexOf("//");
@@ -49,7 +105,7 @@ package com.domlib.utils
 					trimText += codeText;
 					break;
 				}
-				trimText += codeText.substring(0,index)+NBSP;
+				trimText += codeText.substring(0,index)+getNBSP();
 				codeText = codeText.substring(index);
 				switch(index)
 				{
@@ -58,7 +114,7 @@ package com.domlib.utils
 						index = codeText.indexOf("\"");
 						if(index==-1)
 							index = codeText.length-1;
-						constArray.push("\""+codeText.substring(0,index+1));
+						commentLines.push("\""+codeText.substring(0,index+1));
 						codeText = codeText.substring(index+1);
 						break;
 					case squoteIndex:
@@ -66,46 +122,38 @@ package com.domlib.utils
 						index = codeText.indexOf("'");
 						if(index==-1)
 							index=codeText.length-1;
-						constArray.push("'"+codeText.substring(0,index+1));
+						commentLines.push("'"+codeText.substring(0,index+1));
 						codeText = codeText.substring(index+1);
 						break;
 					case commentIndex:
 						index = codeText.indexOf("*/");
 						if(index==-1)
 							index=codeText.length-1;
-						constArray.push(codeText.substring(0,index+2));
+						commentLines.push(codeText.substring(0,index+2));
 						codeText = codeText.substring(index+2);
 						break;
 					case lineCommonentIndex:
 						index = codeText.indexOf("\n");
 						if(index==-1)
 							index=codeText.length-1;
-						constArray.push(codeText.substring(0,index+1));
-						codeText = codeText.substring(index+1);
+						commentLines.push(codeText.substring(0,index));
+						codeText = codeText.substring(index);
 						break;
 				}
 			}
-			codeText = trimText.split("\v1\v").join("\\\"");
-			codeText = codeText.split("\v2\v").join("\\\'");
-			var length:int = constArray.length;
+			codeText = trimText.split("\v-0\v").join("\\\\");
+			codeText = codeText.split("\v-1\v").join("\\\"");
+			codeText = codeText.split("\v-2\v").join("\\\'");
+			var length:int = commentLines.length;
 			for(var i:int=0;i<length;i++)
 			{
-				var constStr:String = constArray[i];
-				constStr = constStr.split("\v1\v").join("\\\"");
-				constStr = constStr.split("\v2\v").join("\\\'");
-				constArray[i] = constStr;
+				var constStr:String = commentLines[i];
+				constStr = constStr.split("\v-0\v").join("\\\\");
+				constStr = constStr.split("\v-1\v").join("\\\"");
+				constStr = constStr.split("\v-2\v").join("\\\'");
+				commentLines[i] = constStr;
 			}
-			commentLines = constArray;
 			return codeText;
-		}
-		/**
-		 *  删除整段字符后，同步删除对应包含的注释行。
-		 */		
-		public function updateCommentLines(preStr:String,removeStr:String):void
-		{
-			var preArr:Array = preStr.split(NBSP);
-			var removeArr:Array = removeStr.split(NBSP);
-			commentLines.splice(preArr.length-1,removeArr.length-1);
 		}
 		/**
 		 * 更新缩进后，同步更新对应包含的注释行。
@@ -113,20 +161,35 @@ package com.domlib.utils
 		 * @param changeStr 发生改变的字符串
 		 * @param numIndent 要添加或减少的缩进。整数表示添加，负数减少。
 		 */			
-		public function updateCommentIndent(preStr:String,changeStr:String,numIndent:int=1):void
+		public function updateCommentIndent(changeStr:String,numIndent:int=1):void
 		{
-			var preArr:Array = preStr.split(NBSP);
-			var removeArr:Array = changeStr.split(NBSP);
-			var length:int = preArr.length-1+removeArr.length-1;
-			for(var i:int=preArr.length-1;i<length;i++)
+			if(!changeStr)
+				return;
+			while(changeStr.length>0)
 			{
-				if(numIndent>0)
+				var index:int = changeStr.indexOf("\v");
+				if(index==-1)
 				{
-					commentLines[i] = CodeUtil.addIndent(commentLines[i],numIndent,true);
+					break;
+				}
+				changeStr = changeStr.substring(index);
+				var str:String = getFirstNBSP(changeStr)
+				if(str)
+				{
+					changeStr = changeStr.substring(str.length);
+					index = getCommentIndex(str);
+					if(numIndent>0)
+					{
+						commentLines[index] = CodeUtil.addIndent(commentLines[index],numIndent,true);
+					}
+					else
+					{
+						commentLines[index] = CodeUtil.removeIndent(commentLines[index],-numIndent);
+					}
 				}
 				else
 				{
-					commentLines[i] = CodeUtil.removeIndent(commentLines[i],-numIndent);
+					changeStr = changeStr.substring(1);
 				}
 			}
 		}
@@ -135,16 +198,34 @@ package com.domlib.utils
 		 */		
 		public function recoveryComment(codeText:String):String
 		{
-			//还原注释和字符串常量
-			var constArray:Array = this.commentLines;
-			var strArr:Array = codeText.split(NBSP);
-			codeText = strArr.shift();
-			var length:int = strArr.length;
-			for(var i:int=0;i<length;i++)
+			if(!codeText)
+				return codeText;
+			var constArray:Array = this.commentLines.concat();
+			var tsText:String = "";
+			while(codeText.length>0)
 			{
-				codeText += constArray[i]+strArr[i];
+				var index:int = codeText.indexOf("\v");
+				if(index==-1)
+				{
+					tsText += codeText;
+					break;
+				}
+				tsText += codeText.substring(0,index);
+				codeText = codeText.substring(index);
+				var str:String = getFirstNBSP(codeText);
+				if(str)
+				{
+					index = getCommentIndex(str);
+					tsText += constArray[index];
+					codeText = codeText.substring(str.length);
+				}
+				else
+				{
+					tsText += "\v";
+					codeText = codeText.substring(1)
+				}
 			}
-			return codeText;
+			return tsText;
 		}
 	}
 }

@@ -133,7 +133,7 @@ package com.domlib.utils
 		/**
 		 * 判断一段代码中是否含有某个变量字符串，且该字符串的前后都不是变量字符。
 		 */		
-		public static function containsVariable(key:String,codeText:String):Boolean
+		public static function containsVariable(key:String,codeText:String,notProperty:Boolean=false):Boolean
 		{
 			var contains:Boolean = false;
 			while(codeText.length>0)
@@ -143,7 +143,8 @@ package com.domlib.utils
 					break;
 				var lastChar:String = codeText.charAt(index+key.length);
 				var firstChar:String = codeText.charAt(index-1);
-				if(!isVariableChar(firstChar)&&!isVariableChar(lastChar))
+				if(!isVariableChar(firstChar)&&!isVariableChar(lastChar)&&
+					(!notProperty||(firstChar!="."&&firstChar!="@")))
 				{
 					contains = true;
 					break;
@@ -154,6 +155,49 @@ package com.domlib.utils
 				}
 			}
 			return contains;
+		}
+		
+		/**
+		 * 获取第一个含有key关键字的起始索引，且该关键字的前后都不是变量字符。
+		 */
+		public static function getFirstVariableIndex(key:String,codeText:String):int{
+			var subLength:int = 0;
+			while(codeText.length){
+				var index:int = codeText.indexOf(key);
+				if(index==-1){
+					break;
+				}
+				var lastChar:String = codeText.charAt(index+key.length);
+				var firstChar:String = codeText.charAt(index-1);
+				if(!isVariableChar(firstChar)&&!isVariableChar(lastChar)){
+					return subLength+index;
+				}
+				else{
+					subLength += index+key.length;
+					codeText = codeText.substring(index+key.length);
+				}
+			}
+			return -1;
+		}
+		/**
+		 * 获取最后一个含有key关键字的起始索引，且该关键字的前后都不是变量字符。
+		 */
+		public static function getLastVariableIndex(key:String,codeText:String):int{
+			while(codeText.length){
+				var index:int = codeText.lastIndexOf(key);
+				if(index==-1){
+					break;
+				}
+				var lastChar:String = codeText.charAt(index+key.length);
+				var firstChar:String = codeText.charAt(index-1);
+				if(!isVariableChar(firstChar)&&!isVariableChar(lastChar)){
+					return index;
+				}
+				else{
+					codeText = codeText.substring(0,index);
+				}
+			}
+			return -1;
 		}
 		
 		/**
@@ -362,6 +406,56 @@ package com.domlib.utils
 					return -1;
 			}
 			return codeText.length;
+		}
+		
+		/**
+		 * 去掉字符串两端所有连续的非变量字符。
+		 * @param str 要格式化的字符串
+		 */		
+		public static  function trimVariable(str:String):String
+		{
+			return trimVariableLeft(trimVariableRight(str));
+		}
+		/**
+		 * 去除字符串左边所有连续的非变量字符。
+		 * @param str 要格式化的字符串
+		 */		
+		public static function trimVariableLeft(str:String):String
+		{
+			if(!str)
+				return "";
+			var char:String = str.charAt(0);
+			while(str.length>0&&!isVariableFirstChar(char))
+			{
+				str = str.substr(1);
+				char = str.charAt(0);
+			}
+			return str;
+		}
+		/**
+		 * 去除字符串右边所有连续的非变量字符。
+		 * @param str 要格式化的字符串
+		 */
+		public static function trimVariableRight(str:String):String
+		{
+			if(!str)
+				return "";
+			var char:String = str.charAt(str.length-1);
+			while(str.length>0&&!isVariableChar(char))
+			{
+				str = str.substr(0,str.length-1);
+				char = str.charAt(str.length-1);
+			}
+			return str;
+		}
+		
+		private static var codeFilter:CodeFilter = new CodeFilter(); 
+		/**
+		 * 移除代码里的注释和单引号双引号内容
+		 */		
+		public static function removeComment(codeText:String):String
+		{
+			return codeFilter.removeComment(codeText,"");
 		}
 	}
 }

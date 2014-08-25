@@ -21,7 +21,7 @@ package com.domlib.utils
 		 */		
 		public static function trimLeft(str:String):String
 		{
-			if(str==""||str==null)
+			if(!str)
 				return "";
 			var char:String = str.charAt(0);
 			while(str.length>0&&
@@ -38,7 +38,7 @@ package com.domlib.utils
 		 */
 		public static function trimRight(str:String):String
 		{
-			if(str==""||str==null)
+			if(!str)
 				return "";
 			var char:String = str.charAt(str.length-1);
 			while(str.length>0&&
@@ -131,7 +131,7 @@ package com.domlib.utils
 			return sizeStr;
 		}
 		
-		private static var htmlEntities:Array = [["<","&lt;"],[">","&gt;"],["&","&amp;"],["\"","&quot;"],["'","&apos;"]];
+		private static var htmlEntities:Array = [["&","&amp;"],["<","&lt;"],[">","&gt;"],["\"","&quot;"],["'","&apos;"]];
 		/**
 		 * 转换为HTML实体字符
 		 */		

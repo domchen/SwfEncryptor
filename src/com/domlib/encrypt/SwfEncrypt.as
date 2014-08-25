@@ -1,6 +1,6 @@
-package
+package com.domlib.encrypt
 {
-	import com.domlib.encrypt.ClassAnalyzer;
+	import com.domlib.utils.CodeUtil;
 	import com.domlib.utils.FileUtil;
 	import com.domlib.utils.StringUtil;
 	import com.swfdiy.data.ABC;
@@ -70,15 +70,19 @@ package
 			var list:Array = [];
 			for each(var srcPath:String in srcPaths)
 			{
-				list = list.concat(FileUtil.search(srcPath,"",filterFunc));
+				list = list.concat(FileUtil.search(srcPath,""));
 			}
 			for each(var file:File in list)
 			{
-				if(file.parent.name=="src")
+				if(file.isDirectory)
+					continue;
+				if(file.parent.name=="src" || !file.extension || ( extensions.indexOf(file.extension.toLowerCase())<0 ))
 				{
 					var name:String = FileUtil.getFileName(file.nativePath);
 					excludeDic[name] = true;
 				}
+				if(!file.extension || ( extensions.indexOf(file.extension.toLowerCase())<0 ))
+					continue;
 				if(file.extension.toLowerCase()=="as")
 				{
 					var text:String = FileUtil.openAsString(file.nativePath);
@@ -273,7 +277,7 @@ package
 				}
 			}
 		}
-	
+		
 		/**
 		 * 从swf文件中读取要排除的关键字,并返回最终要混淆的关键字列表.
 		 */		
@@ -283,7 +287,7 @@ package
 			for each(var path:String in paths)
 			{
 				var bytes:ByteArray = FileUtil.openAsByteArray(path);
-				var file:File = new File(path);
+				var file:File = File.applicationDirectory.resolvePath(path);
 				if(file.extension=="swc")
 				{
 					try
@@ -381,17 +385,8 @@ package
 			for each(var attrib:XML in xml.attributes())
 			{
 				key = attrib.toString();
-				if(key.indexOf(",")!=-1)
-				{
-					for each(key in key.split(","))
-					{
-						if(isNaN(Number(key)))
-						{
-							excludeDic[key] = true;
-						}
-					}
-				}
-				else
+				var varList:Array = getVariables(key);
+				for each(key in varList)
 				{
 					if(isNaN(Number(key)))
 					{
@@ -412,6 +407,55 @@ package
 			}
 		}
 		
+		/**
+		 * 获取变量关键字列表 
+		 */		
+		private function getVariables(codeText:String):Array
+		{
+			var list:Array = [];
+			var word:String = "";
+			var start:Boolean = false;
+			var char:String = "";
+			var lastChar:String = " ";
+			while(codeText.length>0)
+			{
+				char = codeText.charAt(0);
+				codeText = codeText.substring(1);
+				if(start)
+				{
+					if(CodeUtil.isVariableChar(char))
+					{
+						word += char;
+					}
+					else
+					{
+						if(list.indexOf(word)==-1)
+						{
+							list.push(word);
+						}
+						word = "";
+						start = false;
+					}
+				}
+				else
+				{
+					if(CodeUtil.isVariableChar(char))
+					{
+						word = char;
+						start = true;
+					}
+				}
+				lastChar = char;
+			}
+			if(word)
+			{
+				if(list.indexOf(word)==-1)
+				{
+					list.push(word);
+				}
+			}
+			return list;
+		}
 		
 		/**
 		 * 生成混淆后的源码
@@ -513,7 +557,7 @@ package
 		 * 检查这个字符串是不是一个完整词组
 		 */		
 		private function isFullWord(text:String,startIndex:int,
-								   endIndex:int,isPackage:Boolean=false):Boolean
+									endIndex:int,isPackage:Boolean=false):Boolean
 		{
 			startIndex--;
 			var char:String = text.charAt(startIndex);

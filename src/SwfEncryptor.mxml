@@ -8,6 +8,7 @@
 	
 	<fx:Script>
 		<![CDATA[
+			import com.domlib.encrypt.SwfEncrypt;
 			import com.domlib.utils.FileUtil;
 			
 			import flash.utils.setTimeout;

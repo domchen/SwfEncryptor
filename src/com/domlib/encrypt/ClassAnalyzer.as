@@ -1,6 +1,6 @@
 package com.domlib.encrypt
 {
-	
+	import com.domlib.utils.ClassUtil;
 	import com.domlib.utils.CodeFilter;
 	import com.domlib.utils.FileUtil;
 	import com.domlib.utils.StringUtil;
@@ -8,7 +8,6 @@ package com.domlib.encrypt
 	import flash.events.EventDispatcher;
 	import flash.filesystem.File;
 	import flash.utils.Dictionary;
-	import com.domlib.utils.ClassUtil;
 	
 	
 	/**
@@ -33,7 +32,7 @@ package com.domlib.encrypt
 		{
 			if(!srcPath)
 				return;
-			this.srcPath = FileUtil.escapeUrl(srcPath)+"/";
+			this.srcPath = FileUtil.escapePath(srcPath);
 			analyzeFiles();
 		}
 		
