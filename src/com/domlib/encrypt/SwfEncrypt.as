@@ -508,6 +508,8 @@ package com.domlib.encrypt
 					FileUtil.copyTo(file.nativePath,targetPath,true);
 				}
 			}
+			packageList.sort(sortOnLength);
+			keyList.sort(sortOnLength);
 			for each(var path:String in fileList)
 			{
 				var text:String = FileUtil.openAsString(path);
@@ -528,6 +530,11 @@ package com.domlib.encrypt
 				keyBytes.writeObject(keyObject);
 				FileUtil.save(keyWordPath,keyBytes);
 			}
+		}
+		
+		private function sortOnLength(strA:String,strB:String):int
+		{
+			return strB.length-strA.length;
 		}
 		/**
 		 * 替换文本中出现的关键字
