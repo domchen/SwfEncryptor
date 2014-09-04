@@ -49,6 +49,7 @@ package com.domlib.encrypt
 		 */		
 		private var targetSrc:String = "";
 		
+		private var dirNames:Object = {};
 		/**
 		 * 开始混淆 
 		 * @param srcPaths 要混淆的src源码路径列表
@@ -68,8 +69,10 @@ package com.domlib.encrypt
 			this.targetSrc = targetSrc;
 			
 			var list:Array = [];
+			dirNames = {};
 			for each(var srcPath:String in srcPaths)
 			{
+				FileUtil.search(srcPath,null,dirFilterFunc);
 				list = list.concat(FileUtil.search(srcPath,""));
 			}
 			for each(var file:File in list)
@@ -141,23 +144,26 @@ package com.domlib.encrypt
 					}
 				}
 			}
-			
 			for(var i:int=keyList.length-1;i>=0;i--)
 			{
 				key = keyList[i];
-				i = i;
-				for(var p:String in packageDic)
+				if(dirNames[key])
 				{
-					var index:int = p.indexOf(key);
-					if(index!=-1&&isFullWord(p,index,index+key.length))
-					{
-						keyList.splice(i,1);
-						break;
-					}
+					keyList.splice(i,1);
 				}
 			}
 			
 			generateFiles(srcPaths,keyWordPath);
+		}
+		
+		private function dirFilterFunc(file:File):Boolean
+		{
+			if(file.isDirectory&&file.name.charAt(0)!=".")
+			{
+				dirNames[file.name] = true;
+				return true;
+			}
+			return false;
 		}
 		
 		//搜索的扩展名
