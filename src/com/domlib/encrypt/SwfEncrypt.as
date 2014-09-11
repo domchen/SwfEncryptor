@@ -151,6 +151,18 @@ package com.domlib.encrypt
 				{
 					keyList.splice(i,1);
 				}
+				else
+				{
+					for(var p:String in packageDic)
+					{
+						var index:int = p.indexOf(key);
+						if(index!=-1&&isFullWord(p,index,index+key.length))
+						{
+							keyList.splice(i,1);
+							break;
+						}
+					}
+				}
 			}
 			
 			generateFiles(srcPaths,keyWordPath);
