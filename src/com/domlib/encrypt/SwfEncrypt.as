@@ -291,7 +291,17 @@ package com.domlib.encrypt
 					key = key.split("{quote}").join("\"");
 					key = key.split("{squote}").join("'");
 					if(propList.indexOf(key)==-1&&isNaN(Number(key)))
+					{
 						excludeDic[key] = true;
+						var varList:Array = getVariables(key);
+						for each(key in varList)
+						{
+							if(isNaN(Number(key)))
+							{
+								excludeDic[key] = true;
+							}
+						}
+					}
 				}
 			}
 		}
