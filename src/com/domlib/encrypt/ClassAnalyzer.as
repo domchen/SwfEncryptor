@@ -174,6 +174,7 @@ package com.domlib.encrypt
 			info.className = ClassUtil.getID(className);
 			info.packageName = ClassUtil.getPackage(className);
 			var mxmlText:String = FileUtil.openAsString(path);
+			mxmlText = mxmlText.split("\r\n").join("\n").split("\r").join("\n");
 			var xml:XML;
 			try
 			{

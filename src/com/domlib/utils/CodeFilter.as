@@ -84,6 +84,7 @@ package com.domlib.utils
 			codeText = codeText.split("\\\\").join("\v-0\v");
 			codeText = codeText.split("\\\"").join("\v-1\v");
 			codeText = codeText.split("\\\'").join("\v-2\v");
+			codeText = codeText.split("\r\n").join("\n").split("\r").join("\n");
 			commentLines = [];
 			while(codeText.length>0)
 			{
